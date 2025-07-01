@@ -15,7 +15,7 @@
 
 Running the complete pipeline
 
-`sh run.sh`
+Follow steps in run_test.txt
 
 ### Best Practices
 
