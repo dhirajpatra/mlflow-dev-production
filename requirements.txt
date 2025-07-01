@@ -1,0 +1,17 @@
+# Core MLflow dependencies
+pip install mlflow[extras]
+pip install boto3
+pip install azure-storage-blob
+pip install azure-identity
+pip install scikit-learn
+pip install pandas
+pip install numpy
+pip install matplotlib
+pip install seaborn
+
+# For Azure deployment
+pip install azureml-sdk
+pip install azure-ai-ml
+
+# For AWS deployment
+pip install sagemaker
