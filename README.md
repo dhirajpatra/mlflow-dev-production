@@ -47,13 +47,13 @@ aws configure
 ## 🏗️ Project Structure
 
 ```
-├── models/                    # Trained models and artifacts
-├── data/                     # Training and reference datasets
+├── mlflow_artifacts/         # MLflow artifacts storage
+├── mlruns/                   # MLflow experiment runs
 ├── notebooks/                # Jupyter notebooks for exploration
 ├── src/
 │   ├── training/
 │   │   ├── main_training.py          # Main training pipeline
-│   │   └── model_utils.py            # Model utilities
+│   │   └── model_training.py         # Model training utilities
 │   ├── deployment/
 │   │   ├── azure_deployment.py      # Azure ML deployment
 │   │   └── aws_sagemaker_deployment.py  # AWS SageMaker deployment
@@ -64,9 +64,17 @@ aws configure
 │       └── start_mlflow_server.py   # MLflow server setup
 ├── config/                   # Configuration files
 ├── tests/                    # Unit tests
-├── requirements.txt          # Python dependencies
-├── run_steps.txt              # Step-by-step pipeline execution guide
-└── README.md                # This file
+├── api_gateway_integration.py    # API Gateway integration
+├── aws_mlflow_server.py          # AWS MLflow server setup
+├── azure_aci_deployment.py       # Azure Container Instances deployment
+├── data_pipeline.py              # Data processing pipeline
+├── model_registry.py             # Model registry operations
+├── production_pipeline.py        # Production pipeline orchestration
+├── requirements.txt              # Python dependencies
+├── run_steps.txt                # Step-by-step pipeline execution guide
+├── mlflow.db                    # Local MLflow database
+├── LICENSE.txt                  # License file
+└── README.md                   # This file
 ```
 
 ## 🔧 Setup Instructions
@@ -110,30 +118,56 @@ Follow the instructions in `run_steps.txt` for the complete pipeline:
 
 ```bash
 # 1. Start MLflow server
-python start_mlflow_server.py
+python src/utils/start_mlflow_server.py
 
 # 2. Train models
-python main_training.py
+python src/training/main_training.py
 
 # 3. Deploy to cloud (choose one)
-python azure_deployment.py
+python src/deployment/azure_deployment.py
 # OR
-python aws_sagemaker_deployment.py
+python src/deployment/aws_sagemaker_deployment.py
 
 # 4. Set up monitoring
 python -c "
-from model_monitoring import AutomatedMonitoring
+from src.monitoring.model_monitoring import AutomatedMonitoring
 monitor = AutomatedMonitoring('your-endpoint-url', 'reference_data.csv')
 monitor.run_monitoring_cycle()
 "
 
 # 5. Run A/B test
 python -c "
-from ab_testing import ABTestingFramework
+from src.monitoring.ab_testing import ABTestingFramework
 ab_test = ABTestingFramework()
 ab_test.setup_ab_test('model_uri_a', 'model_uri_b')
 # Run predictions and analyze
 "
+```
+
+### Alternative Deployment Options
+
+**Azure Container Instances:**
+
+```bash
+python azure_aci_deployment.py
+```
+
+**AWS MLflow Server:**
+
+```bash
+python aws_mlflow_server.py
+```
+
+**Production Pipeline:**
+
+```bash
+python production_pipeline.py
+```
+
+**Data Pipeline:**
+
+```bash
+python data_pipeline.py
 ```
 
 ### Automated Execution
@@ -155,17 +189,38 @@ done < run_steps.txt
 **Training Only:**
 
 ```bash
-python main_training.py --experiment-name "my-experiment"
+python src/training/main_training.py --experiment-name "my-experiment"
 ```
 
-**Deployment Only:**
+**Deployment Options:**
 
 ```bash
-# Azure
-python azure_deployment.py --model-uri "models:/my-model/1"
+# Azure ML
+python src/deployment/azure_deployment.py --model-uri "models:/my-model/1"
 
-# AWS
-python aws_sagemaker_deployment.py --model-uri "models:/my-model/1"
+# AWS SageMaker
+python src/deployment/aws_sagemaker_deployment.py --model-uri "models:/my-model/1"
+
+# Azure Container Instances
+python azure_aci_deployment.py --model-uri "models:/my-model/1"
+```
+
+**Data Pipeline:**
+
+```bash
+python data_pipeline.py
+```
+
+**Model Registry Operations:**
+
+```bash
+python model_registry.py
+```
+
+**Production Pipeline:**
+
+```bash
+python production_pipeline.py
 ```
 
 ## 📊 Model Development and Tracking
@@ -208,6 +263,15 @@ endpoint_url = deployer.deploy_model(
 )
 ```
 
+### Azure Container Instances
+
+Deploy models to Azure Container Instances for lightweight deployments:
+
+```python
+# Using the azure_aci_deployment.py script
+python azure_aci_deployment.py
+```
+
 ### AWS SageMaker
 
 Deploy models to Amazon SageMaker:
@@ -222,6 +286,15 @@ endpoint_name = deployer.deploy_model(
 )
 ```
 
+### AWS MLflow Server
+
+Set up MLflow server on AWS infrastructure:
+
+```python
+# Using the aws_mlflow_server.py script
+python aws_mlflow_server.py
+```
+
 ## 📈 Monitoring and Production
 
 ### Automated Monitoring
@@ -232,6 +305,13 @@ The monitoring system tracks:
 - **Model Performance**: Accuracy, precision, recall metrics over time
 - **Infrastructure**: Latency, throughput, error rates
 - **Business Metrics**: Custom KPIs and business-specific metrics
+
+```python
+from src.monitoring.model_monitoring import AutomatedMonitoring
+
+monitor = AutomatedMonitoring('your-endpoint-url', 'reference_data.csv')
+monitor.run_monitoring_cycle()
+```
 
 ### A/B Testing
 
@@ -247,6 +327,24 @@ results = ab_test.run_experiment(
     traffic_split=0.5,
     duration_days=7
 )
+```
+
+### Production Pipeline
+
+The production pipeline orchestrates the entire workflow:
+
+```python
+# Run the complete production pipeline
+python production_pipeline.py
+```
+
+### API Gateway Integration
+
+For production API deployments:
+
+```python
+# Set up API Gateway integration
+python api_gateway_integration.py
 ```
 
 ## 🔍 Troubleshooting
@@ -343,4 +441,3 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 Follow for guide [MLflow Documentation](https://mlflow.org/docs/latest/ml/getting-started/)
 Follow other solutions and tutorial [Think Different](https://dhirajpatra.blogspot.com/)
-

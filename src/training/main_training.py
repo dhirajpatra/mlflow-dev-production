@@ -1,7 +1,7 @@
 # main_training.py
 import mlflow
-from data_pipeline import DataPipeline
-from model_training import ModelTrainer
+from deployment.data_pipeline import DataPipeline
+from training.model_training import ModelTrainer
 
 def main():
     """Main training pipeline"""
