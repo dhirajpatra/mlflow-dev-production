@@ -342,3 +342,5 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 🌐 Guide
 
 Follow for guide [MLflow Documentation](https://mlflow.org/docs/latest/ml/getting-started/)
+Follow other solutions and tutorial [Think Different](https://dhirajpatra.blogspot.com/)
+
