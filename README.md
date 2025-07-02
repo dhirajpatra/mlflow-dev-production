@@ -10,8 +10,8 @@ git clone <your-repo-url>
 cd mlflow-project
 pip install -r requirements.txt
 
-# Run the complete pipeline
-bash run_pipeline.sh
+# Follow the step-by-step instructions in run_steps.txt
+cat run_steps.txt
 ```
 
 ## 📋 Prerequisites
@@ -65,7 +65,7 @@ aws configure
 ├── config/                   # Configuration files
 ├── tests/                    # Unit tests
 ├── requirements.txt          # Python dependencies
-├── run_pipeline.sh          # Complete pipeline script
+├── run_steps.txt              # Step-by-step pipeline execution guide
 └── README.md                # This file
 ```
 
@@ -104,35 +104,50 @@ AZURE_WORKSPACE_NAME=your-workspace-name
 
 ## 🚂 Running the Pipeline
 
-### Complete Pipeline
+### Step-by-Step Execution
 
-Execute the entire ML pipeline:
+Follow the instructions in `run_steps.txt` for the complete pipeline:
 
 ```bash
 # 1. Start MLflow server
-python src/utils/start_mlflow_server.py
+python start_mlflow_server.py
 
-# 2. Train and register models
-python src/training/main_training.py
+# 2. Train models
+python main_training.py
 
 # 3. Deploy to cloud (choose one)
-python src/deployment/azure_deployment.py
+python azure_deployment.py
 # OR
-python src/deployment/aws_sagemaker_deployment.py
+python aws_sagemaker_deployment.py
 
-# 4. Set up automated monitoring
+# 4. Set up monitoring
 python -c "
-from src.monitoring.model_monitoring import AutomatedMonitoring
-monitor = AutomatedMonitoring('your-endpoint-url', 'data/reference_data.csv')
+from model_monitoring import AutomatedMonitoring
+monitor = AutomatedMonitoring('your-endpoint-url', 'reference_data.csv')
 monitor.run_monitoring_cycle()
 "
 
-# 5. Run A/B testing
+# 5. Run A/B test
 python -c "
-from src.monitoring.ab_testing import ABTestingFramework
+from ab_testing import ABTestingFramework
 ab_test = ABTestingFramework()
-ab_test.setup_ab_test('models:/model_name/1', 'models:/model_name/2')
+ab_test.setup_ab_test('model_uri_a', 'model_uri_b')
+# Run predictions and analyze
 "
+```
+
+### Automated Execution
+
+For convenience, you can also run all steps sequentially:
+
+```bash
+# Execute each step from run_steps.txt
+while IFS= read -r line; do
+    if [[ $line == python* ]]; then
+        echo "Executing: $line"
+        eval "$line"
+    fi
+done < run_steps.txt
 ```
 
 ### Individual Components
@@ -140,17 +155,17 @@ ab_test.setup_ab_test('models:/model_name/1', 'models:/model_name/2')
 **Training Only:**
 
 ```bash
-python src/training/main_training.py --experiment-name "my-experiment"
+python main_training.py --experiment-name "my-experiment"
 ```
 
 **Deployment Only:**
 
 ```bash
 # Azure
-python src/deployment/azure_deployment.py --model-uri "models:/my-model/1"
+python azure_deployment.py --model-uri "models:/my-model/1"
 
 # AWS
-python src/deployment/aws_sagemaker_deployment.py --model-uri "models:/my-model/1"
+python aws_sagemaker_deployment.py --model-uri "models:/my-model/1"
 ```
 
 ## 📊 Model Development and Tracking
